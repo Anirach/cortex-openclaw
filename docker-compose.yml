@@ -1,0 +1,22 @@
+services:
+  cortex-server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    ports:
+      - "8900:8900"
+    volumes:
+      - cortex-data:/app/data
+      - ${OBSIDIAN_VAULT:-./vault}:/app/vault
+    environment:
+      - CORTEX_DB_PATH=/app/data/cortex.db
+      - CORTEX_VAULT_PATH=/app/vault
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8900/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  cortex-data:

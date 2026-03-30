@@ -1,0 +1,26 @@
+{
+  "id": "cortex-memory",
+  "name": "CORTEX Cognitive Memory",
+  "description": "Self-evolving cognitive memory with 4 memory types, genetic algorithm optimization, gap filling, and automatic prompt assembly",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "serverUrl": {
+        "type": "string",
+        "default": "http://localhost:8900",
+        "description": "URL of the CORTEX REST API server"
+      },
+      "autoConsolidate": {
+        "type": "boolean",
+        "default": true,
+        "description": "Automatically run consolidation after each session"
+      },
+      "enablePromptAssembly": {
+        "type": "boolean",
+        "default": true,
+        "description": "Use PromptAssembler for context enhancement"
+      }
+    },
+    "additionalProperties": false
+  }
+}

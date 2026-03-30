@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.venv/
+venv/
+env/
+
+# Node/TypeScript
+node_modules/
+plugin/dist/
+*.js.map
+*.d.ts
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Data
+*.db
+*.sqlite
+data/
+vault/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+cortex-data/
+
+# Test
+.pytest_cache/
+.coverage
+htmlcov/
