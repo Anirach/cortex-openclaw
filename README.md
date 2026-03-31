@@ -45,49 +45,15 @@ OpenClaw agents are smart — but they forget everything between sessions. Their
 
 ## 🏗️ Architecture
 
-```
-Your OpenClaw Agent
-├── 🔌 Context Engine (automatic, invisible)
-│   ├── INGEST   → Every message → Working + Episodic + Semantic memory
-│   ├── ASSEMBLE → Before LLM call → Retrieve relevant memories + select prompt technique
-│   ├── COMPACT  → Consolidation → Working → Episodic → Semantic/Procedural
-│   └── EVOLVE   → After turns → Genetic algorithm optimizes retrieval
-│
-├── 🛠️ Agent Tools (LLM can call explicitly)
-│   ├── cortex_remember    "Store this fact"
-│   ├── cortex_recall      "What do I know about X?"
-│   ├── cortex_gaps        "What am I missing?"
-│   ├── cortex_consolidate "Sleep cycle now"
-│   ├── cortex_evolve      "Optimize retrieval"
-│   └── cortex_stats       "Memory dashboard"
-│
-└── 📡 REST API + MCP (for external tools)
-    └── FastAPI on port 8900
-```
+<p align="center">
+  <img src="docs/architecture.svg" alt="CORTEX × OpenClaw Architecture" width="100%">
+</p>
 
 ### The 9-Layer Memory Stack
 
-```
-┌─────────────────────────────────────────┐
-│  ⚡ Working Memory     — session buffer  │  ← Ring buffer, auto-managed
-├─────────────────────────────────────────┤
-│  📅 Episodic Memory    — events & dates  │  ← "User asked about X at 3pm"
-├─────────────────────────────────────────┤
-│  📚 Semantic Memory    — facts & knowledge│ ← "FastAPI uses Starlette"
-├─────────────────────────────────────────┤
-│  🔧 Procedural Memory  — skills & rules  │  ← "When debugging, check logs first"
-├─────────────────────────────────────────┤
-│  🔍 Hippocampal Index  — hybrid search   │  ← Vector + BM25 + Temporal + Graph
-├─────────────────────────────────────────┤
-│  😴 Consolidation      — sleep/dream     │  ← Ebbinghaus forgetting curve
-├─────────────────────────────────────────┤
-│  📈 Self-Improvement   — error learning  │  ← Tracks mistakes, extracts patterns
-├─────────────────────────────────────────┤
-│  🧬 Self-Evolution     — genetic algo    │  ← Evolves retrieval strategy weights
-├─────────────────────────────────────────┤
-│  🧭 Meta-Cognition     — gap detection   │  ← Knows what it doesn't know
-└─────────────────────────────────────────┘
-```
+<p align="center">
+  <img src="docs/memory-stack.svg" alt="CORTEX 9-Layer Memory Stack" width="100%">
+</p>
 
 ---
 

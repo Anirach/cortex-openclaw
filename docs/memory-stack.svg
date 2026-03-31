@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 620" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#818CF8;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#6366F1;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#34D399;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#10B981;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#60A5FA;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="g4" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FBBF24;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="g5" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#F472B6;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#EC4899;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="g6" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#A78BFA;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="g7" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FB923C;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#F97316;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="g8" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#F87171;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#EF4444;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="g9" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#2DD4BF;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#14B8A6;stop-opacity:1"/>
+    </linearGradient>
+    <filter id="shadow" x="-2%" y="-2%" width="104%" height="108%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+
+  <!-- Title -->
+  <text x="400" y="35" text-anchor="middle" font-size="22" font-weight="700" fill="#1F2937">The 9-Layer Cognitive Memory Stack</text>
+
+  <!-- Layer 1: Working Memory -->
+  <g filter="url(#shadow)">
+    <rect x="40" y="55" width="360" height="52" rx="10" fill="url(#g1)"/>
+    <text x="60" y="86" font-size="15" font-weight="600" fill="white">⚡  Working Memory</text>
+    <text x="280" y="86" font-size="12" fill="rgba(255,255,255,0.85)" text-anchor="end">session buffer</text>
+  </g>
+  <text x="420" y="86" font-size="13" fill="#6B7280">Ring buffer, auto-managed (capacity: 20)</text>
+
+  <!-- Layer 2: Episodic Memory -->
+  <g filter="url(#shadow)">
+    <rect x="40" y="117" width="360" height="52" rx="10" fill="url(#g2)"/>
+    <text x="60" y="148" font-size="15" font-weight="600" fill="white">📅  Episodic Memory</text>
+    <text x="280" y="148" font-size="12" fill="rgba(255,255,255,0.85)" text-anchor="end">events &amp; dates</text>
+  </g>
+  <text x="420" y="148" font-size="13" fill="#6B7280">"User asked about X at 3pm on Monday"</text>
+
+  <!-- Layer 3: Semantic Memory -->
+  <g filter="url(#shadow)">
+    <rect x="40" y="179" width="360" height="52" rx="10" fill="url(#g3)"/>
+    <text x="60" y="210" font-size="15" font-weight="600" fill="white">📚  Semantic Memory</text>
+    <text x="280" y="210" font-size="12" fill="rgba(255,255,255,0.85)" text-anchor="end">facts &amp; knowledge</text>
+  </g>
+  <text x="420" y="210" font-size="13" fill="#6B7280">"FastAPI uses Starlette under the hood"</text>
+
+  <!-- Layer 4: Procedural Memory -->
+  <g filter="url(#shadow)">
+    <rect x="40" y="241" width="360" height="52" rx="10" fill="url(#g4)"/>
+    <text x="60" y="272" font-size="15" font-weight="600" fill="#1F2937">🔧  Procedural Memory</text>
+    <text x="280" y="272" font-size="12" fill="rgba(31,41,55,0.7)" text-anchor="end">skills &amp; rules</text>
+  </g>
+  <text x="420" y="272" font-size="13" fill="#6B7280">"When debugging, check logs first"</text>
+
+  <!-- Separator line -->
+  <line x1="60" y1="308" x2="740" y2="308" stroke="#E5E7EB" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="400" y="325" text-anchor="middle" font-size="11" fill="#9CA3AF" font-weight="500">INFRASTRUCTURE</text>
+
+  <!-- Layer 5: Hippocampal Index -->
+  <g filter="url(#shadow)">
+    <rect x="40" y="340" width="360" height="52" rx="10" fill="url(#g5)"/>
+    <text x="60" y="371" font-size="15" font-weight="600" fill="white">🔍  Hippocampal Index</text>
+    <text x="280" y="371" font-size="12" fill="rgba(255,255,255,0.85)" text-anchor="end">hybrid search</text>
+  </g>
+  <text x="420" y="371" font-size="13" fill="#6B7280">Vector + BM25 + Temporal + Graph + Importance</text>
+
+  <!-- Layer 6: Consolidation -->
+  <g filter="url(#shadow)">
+    <rect x="40" y="402" width="360" height="52" rx="10" fill="url(#g6)"/>
+    <text x="60" y="433" font-size="15" font-weight="600" fill="white">😴  Consolidation</text>
+    <text x="280" y="433" font-size="12" fill="rgba(255,255,255,0.85)" text-anchor="end">sleep / dream</text>
+  </g>
+  <text x="420" y="433" font-size="13" fill="#6B7280">Ebbinghaus forgetting curve (R = e⁻ᵗ/ˢ)</text>
+
+  <!-- Separator line -->
+  <line x1="60" y1="469" x2="740" y2="469" stroke="#E5E7EB" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="400" y="486" text-anchor="middle" font-size="11" fill="#9CA3AF" font-weight="500">COGNITION</text>
+
+  <!-- Layer 7: Self-Improvement -->
+  <g filter="url(#shadow)">
+    <rect x="40" y="498" width="360" height="52" rx="10" fill="url(#g7)"/>
+    <text x="60" y="529" font-size="15" font-weight="600" fill="white">📈  Self-Improvement</text>
+    <text x="280" y="529" font-size="12" fill="rgba(255,255,255,0.85)" text-anchor="end">error learning</text>
+  </g>
+  <text x="420" y="529" font-size="13" fill="#6B7280">Tracks mistakes, extracts correction patterns</text>
+
+  <!-- Layer 8: Self-Evolution -->
+  <g filter="url(#shadow)">
+    <rect x="40" y="558" width="360" height="52" rx="10" fill="url(#g8)"/>
+    <text x="60" y="589" font-size="15" font-weight="600" fill="white">🧬  Self-Evolution</text>
+    <text x="280" y="589" font-size="12" fill="rgba(255,255,255,0.85)" text-anchor="end">genetic algo</text>
+  </g>
+  <text x="420" y="589" font-size="13" fill="#6B7280">Evolves retrieval strategy weights over time</text>
+
+  <!-- Layer 9: Meta-Cognition -->
+  <g filter="url(#shadow)">
+    <rect x="40" y="618" width="360" height="52" rx="10" fill="url(#g9)"/>
+    <text x="60" y="649" font-size="15" font-weight="600" fill="white">🧭  Meta-Cognition</text>
+    <text x="280" y="649" font-size="12" fill="rgba(255,255,255,0.85)" text-anchor="end">gap detection</text>
+  </g>
+  <text x="420" y="649" font-size="13" fill="#6B7280">Knows what it doesn't know — fills gaps</text>
+
+  <!-- Right side bracket labels -->
+  <path d="M 395 65 L 405 65 L 405 283 L 395 283" fill="none" stroke="#D1D5DB" stroke-width="1.5"/>
+  <text x="410" y="178" font-size="11" fill="#9CA3AF" transform="rotate(90, 410, 178)">MEMORY TYPES</text>
+
+</svg>
