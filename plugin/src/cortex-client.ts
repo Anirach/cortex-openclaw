@@ -94,6 +94,25 @@ export interface HealthResult {
   uptime: number;
 }
 
+export interface MigrateWorkspaceResult {
+  success: boolean;
+  already_migrated: boolean;
+  stats: Record<string, number>;
+  errors: string[];
+  duration_seconds: number;
+}
+
+export interface MigrateStatusResult {
+  migrated: boolean;
+  timestamp?: string;
+  stats?: Record<string, unknown>;
+}
+
+export interface MigrateFileResult {
+  imported: number;
+  type: string;
+}
+
 export class CortexClient {
   private baseUrl: string;
   private timeout: number;
@@ -162,6 +181,29 @@ export class CortexClient {
 
   async syncObsidian(vaultPath: string): Promise<{ synced: number; gaps_found: number }> {
     return this.post("/obsidian/sync", { vault_path: vaultPath });
+  }
+
+  // ── Migration ──────────────────────────────────────────
+
+  async migrateWorkspace(
+    workspacePath: string,
+    options?: { force?: boolean; dryRun?: boolean; obsidianVaultPath?: string; skipDailyBefore?: string },
+  ): Promise<MigrateWorkspaceResult> {
+    return this.post("/migrate/workspace", {
+      workspace_path: workspacePath,
+      force: options?.force ?? false,
+      dry_run: options?.dryRun ?? false,
+      obsidian_vault_path: options?.obsidianVaultPath,
+      skip_daily_before: options?.skipDailyBefore,
+    });
+  }
+
+  async getMigrationStatus(): Promise<MigrateStatusResult> {
+    return this.get("/migrate/status");
+  }
+
+  async migrateFile(filepath: string, type: "memory_md" | "daily" | "user_md" | "soul_md"): Promise<MigrateFileResult> {
+    return this.post("/migrate/file", { filepath, type });
   }
 
   // ── MCP Passthrough ───────────────────────────────────

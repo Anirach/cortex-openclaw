@@ -8,9 +8,11 @@ services:
     volumes:
       - cortex-data:/app/data
       - ${OBSIDIAN_VAULT:-./vault}:/app/vault
+      - ${OPENCLAW_WORKSPACE:-/home/clawdbot/clawd}:/app/workspace:ro
     environment:
       - CORTEX_DB_PATH=/app/data/cortex.db
       - CORTEX_VAULT_PATH=/app/vault
+      - OPENCLAW_WORKSPACE=/app/workspace
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8900/health"]

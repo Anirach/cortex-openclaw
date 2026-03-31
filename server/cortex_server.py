@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 from cortex.engine import CortexEngine
 
 from server.mcp_handler import MCPHandler
+from server.openclaw_migrator import OpenClawMigrator, MigrateOptions
 
 
 # ══════════════════════════════════════════════════════════
@@ -171,6 +172,38 @@ class HealthResponse(BaseModel):
     status: str
     version: str
     uptime: float
+
+
+class MigrateWorkspaceRequest(BaseModel):
+    workspace_path: str = Field(..., description="Path to OpenClaw workspace")
+    obsidian_vault_path: str | None = None
+    force: bool = False
+    dry_run: bool = False
+    skip_daily_before: str | None = None
+
+
+class MigrateWorkspaceResponse(BaseModel):
+    success: bool
+    already_migrated: bool
+    stats: dict[str, int]
+    errors: list[str]
+    duration_seconds: float
+
+
+class MigrateStatusResponse(BaseModel):
+    migrated: bool
+    timestamp: str | None = None
+    stats: dict[str, Any] | None = None
+
+
+class MigrateFileRequest(BaseModel):
+    filepath: str
+    type: str = Field(..., description="File type: memory_md, daily, user_md, soul_md")
+
+
+class MigrateFileResponse(BaseModel):
+    imported: int
+    type: str
 
 
 class MCPRequest(BaseModel):
@@ -351,6 +384,71 @@ async def obsidian_sync(req: ObsidianSyncRequest):
         return ObsidianSyncResponse(synced=synced, gaps_found=gaps_found)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Obsidian sync failed: {e}")
+
+
+# ══════════════════════════════════════════════════════════
+#  Migration Endpoints
+# ══════════════════════════════════════════════════════════
+
+@app.post("/migrate/workspace", response_model=MigrateWorkspaceResponse)
+async def migrate_workspace(req: MigrateWorkspaceRequest):
+    engine = get_engine()
+    migrator = OpenClawMigrator(engine)
+    try:
+        opts = MigrateOptions(
+            workspace_path=req.workspace_path,
+            obsidian_vault_path=req.obsidian_vault_path,
+            force=req.force,
+            dry_run=req.dry_run,
+            skip_daily_before=req.skip_daily_before,
+        )
+        result = migrator.migrate_workspace(req.workspace_path, opts)
+        return MigrateWorkspaceResponse(
+            success=result.success,
+            already_migrated=result.already_migrated,
+            stats=result.stats,
+            errors=result.errors,
+            duration_seconds=round(result.duration_seconds, 3),
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Migration failed: {e}")
+
+
+@app.get("/migrate/status", response_model=MigrateStatusResponse)
+async def migrate_status():
+    engine = get_engine()
+    migrator = OpenClawMigrator(engine)
+    try:
+        status = migrator.check_migration_status()
+        return MigrateStatusResponse(
+            migrated=status["migrated"],
+            timestamp=status.get("timestamp"),
+            stats=status.get("stats") or None,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Status check failed: {e}")
+
+
+@app.post("/migrate/file", response_model=MigrateFileResponse)
+async def migrate_file(req: MigrateFileRequest):
+    engine = get_engine()
+    migrator = OpenClawMigrator(engine)
+    try:
+        type_map = {
+            "memory_md": migrator.import_memory_md,
+            "daily": migrator.import_daily_files,
+            "user_md": migrator.import_user_md,
+            "soul_md": migrator.import_soul_md,
+        }
+        handler = type_map.get(req.type)
+        if not handler:
+            raise HTTPException(status_code=400, detail=f"Unknown type: {req.type}. Use: {list(type_map.keys())}")
+        count = handler(req.filepath)
+        return MigrateFileResponse(imported=count, type=req.type)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"File migration failed: {e}")
 
 
 @app.post("/mcp")

@@ -78,6 +78,26 @@ export function definePluginEntry(api: PluginAPI): void {
   // Track turns per session for periodic evolution
   const sessionTurnCounts = new Map<string, number>();
 
+  // Auto-migration: check once on first ingest
+  let migrationChecked = false;
+  async function checkAutoMigration(): Promise<void> {
+    if (migrationChecked) return;
+    migrationChecked = true;
+    try {
+      const status = await client.getMigrationStatus();
+      if (!status.migrated) {
+        const workspacePath = process.env.OPENCLAW_WORKSPACE || process.cwd();
+        const result = await client.migrateWorkspace(workspacePath, { force: false });
+        if (result.success && !result.already_migrated) {
+          console.log(`[CORTEX] Workspace auto-migrated: ${result.stats.total} entries imported`);
+        }
+      }
+    } catch (err) {
+      // Non-fatal — migration is optional
+      console.warn("[CORTEX] Auto-migration check failed:", err);
+    }
+  }
+
   // ── Context Engine ──────────────────────────────────────
 
   api.registerContextEngine("cortex", () => ({
@@ -89,6 +109,8 @@ export function definePluginEntry(api: PluginAPI): void {
 
     async ingest({ sessionId, message }: IngestContext): Promise<void> {
       try {
+        // Auto-migrate workspace on first ingest
+        await checkAutoMigration();
         // Store every message in working memory
         await client.store("working", message.content, {
           metadata: {
@@ -192,6 +214,31 @@ export function definePluginEntry(api: PluginAPI): void {
   }));
 
   // ── Agent Tools ─────────────────────────────────────────
+
+  api.registerTool({
+    name: "cortex_migrate",
+    description:
+      "Import OpenClaw workspace files (MEMORY.md, daily files, USER.md, SOUL.md) into CORTEX cognitive memory. Run once on first setup, or with force=true to re-import after file changes.",
+    parameters: Type.Object({
+      workspace_path: Type.String({ description: "Path to OpenClaw workspace (e.g., /home/user/clawd)" }),
+      force: Type.Optional(Type.Boolean({ default: false, description: "Re-import even if already migrated" })),
+      dry_run: Type.Optional(Type.Boolean({ default: false, description: "Preview without importing" })),
+      obsidian_vault_path: Type.Optional(Type.String({ description: "Path to Obsidian vault" })),
+    }),
+    async execute(_id: string, params: Record<string, unknown>) {
+      const result = await client.migrateWorkspace(params.workspace_path as string, {
+        force: (params.force as boolean) ?? false,
+        dryRun: (params.dry_run as boolean) ?? false,
+        obsidianVaultPath: params.obsidian_vault_path as string | undefined,
+      });
+      return {
+        ...result,
+        message: result.already_migrated
+          ? "Workspace already migrated. Use force=true to re-import."
+          : `Migration complete: ${result.stats.total} entries imported in ${result.duration_seconds.toFixed(1)}s`,
+      };
+    },
+  });
 
   api.registerTool({
     name: "cortex_remember",

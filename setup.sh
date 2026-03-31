@@ -35,6 +35,14 @@ for i in $(seq 1 30); do
     sleep 1
 done
 
+# Migrate existing OpenClaw workspace
+echo "📂 Checking for existing OpenClaw workspace to migrate..."
+if docker compose exec cortex-server python -m server.migrate_cli /app/workspace --json 2>/dev/null; then
+    echo "✅ Workspace migration complete!"
+else
+    echo "ℹ️  No workspace to migrate (fresh install or migration skipped)"
+fi
+
 # Build OpenClaw plugin
 echo "🔧 Building OpenClaw plugin..."
 cd plugin

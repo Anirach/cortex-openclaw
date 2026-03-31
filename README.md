@@ -122,6 +122,87 @@ Add to your `openclaw.json`:
 }
 ```
 
+## Migration — Importing Existing OpenClaw Memory
+
+CORTEX can automatically import your existing OpenClaw workspace files on first boot. This is a one-time, idempotent operation.
+
+### What Gets Imported
+
+| Source File | → CORTEX Type | Importance | Notes |
+|-------------|---------------|------------|-------|
+| `MEMORY.md` | Semantic | 0.8 (high) | Human-curated, most valuable |
+| `memory/*.md` | Episodic | 0.5 (medium) | Daily scratch notes |
+| `USER.md` | Semantic | 0.9 (high) | User profile facts |
+| `SOUL.md` | Procedural | 0.85 (high) | Behavioral rules & patterns |
+| Obsidian vault | Semantic | 0.6 (medium) | Knowledge notes |
+
+### Auto-Migration
+
+On first boot, the Context Engine checks migration status and auto-imports the workspace:
+
+```
+[CORTEX] Workspace auto-migrated: 47 entries imported
+```
+
+Set `OPENCLAW_WORKSPACE` environment variable to point to your workspace.
+
+### Manual Migration via CLI
+
+```bash
+# Basic migration
+python -m server.migrate_cli /home/user/clawd
+
+# Dry run (preview only)
+python -m server.migrate_cli /home/user/clawd --dry-run
+
+# Force re-import (after editing files)
+python -m server.migrate_cli /home/user/clawd --force
+
+# Include Obsidian vault
+python -m server.migrate_cli /home/user/clawd --obsidian /home/user/obsidian-vault
+
+# Skip old daily files
+python -m server.migrate_cli /home/user/clawd --since 2026-03-01
+
+# JSON output (for scripting)
+python -m server.migrate_cli /home/user/clawd --json
+```
+
+### Migration via Agent Tool
+
+The agent has a `cortex_migrate` tool:
+
+```
+Use cortex_migrate:
+- workspace_path: "/home/user/clawd"
+- force: false
+- dry_run: false
+```
+
+### Migration REST API
+
+```bash
+# Full workspace migration
+curl -X POST http://localhost:8900/migrate/workspace \
+  -H "Content-Type: application/json" \
+  -d '{"workspace_path": "/app/workspace"}'
+
+# Check migration status
+curl http://localhost:8900/migrate/status
+
+# Migrate a single file
+curl -X POST http://localhost:8900/migrate/file \
+  -H "Content-Type: application/json" \
+  -d '{"filepath": "/app/workspace/MEMORY.md", "type": "memory_md"}'
+```
+
+### Key Design Decisions
+
+- **Idempotent** — running twice doesn't duplicate memories (marker-based check)
+- **Read-only** — source files are never modified
+- **Graceful** — missing files are skipped without error
+- **Configurable** — importance weights, date filters, dry-run mode
+
 ## Configuration
 
 | Option | Type | Default | Description |
@@ -137,6 +218,7 @@ Add to your `openclaw.json`:
 | `CORTEX_DB_PATH` | `cortex.db` | SQLite database path |
 | `CORTEX_VAULT_PATH` | none | Obsidian vault path for sync |
 | `OBSIDIAN_VAULT` | `./vault` | Docker volume mount for Obsidian vault |
+| `OPENCLAW_WORKSPACE` | `/home/clawdbot/clawd` | OpenClaw workspace for migration (mounted read-only) |
 
 ## Agent Tools
 
@@ -215,6 +297,14 @@ All endpoints are served on port 8900.
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/prompt/assemble` | Auto-select prompt engineering techniques |
+
+### Migration
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/migrate/workspace` | Full workspace migration |
+| GET | `/migrate/status` | Check migration status |
+| POST | `/migrate/file` | Migrate a single file |
 
 ### Obsidian Integration
 
@@ -299,10 +389,13 @@ cortex-openclaw/
 ├── server/                     # Python REST API (Layer 1)
 │   ├── cortex_server.py        # FastAPI app with all endpoints
 │   ├── mcp_handler.py          # MCP JSON-RPC protocol handler
+│   ├── openclaw_migrator.py    # OpenClaw workspace migration
+│   ├── migrate_cli.py          # CLI for manual migration
 │   ├── requirements.txt        # Python dependencies
 │   ├── Dockerfile              # Container build
 │   └── tests/
-│       └── test_api.py         # API endpoint tests
+│       ├── test_api.py          # API endpoint tests
+│       └── test_migrator.py    # Migration tests
 ├── plugin/                     # TypeScript OpenClaw plugin (Layer 2)
 │   ├── package.json            # npm package config
 │   ├── openclaw.plugin.json    # OpenClaw plugin manifest
