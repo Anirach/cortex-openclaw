@@ -1,111 +1,139 @@
-# 🧠 CORTEX + OpenClaw Integration
+<p align="center">
+  <img src="https://img.shields.io/badge/CORTEX-🧠_Cognitive_Memory-8B5CF6?style=for-the-badge" alt="CORTEX">
+  <img src="https://img.shields.io/badge/OpenClaw-🐾_AI_Agents-3B82F6?style=for-the-badge" alt="OpenClaw">
+  <img src="https://img.shields.io/badge/Python-3.10+-10B981?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/TypeScript-5.x-F59E0B?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
+</p>
 
-**Self-evolving cognitive memory for AI agents** — bridges the [CORTEX](https://github.com/Anirach/cortex-memory) cognitive memory engine with [OpenClaw](https://github.com/nicobailey/openclaw), providing a Context Engine, 6 agent tools, REST API, and MCP protocol support.
+<h1 align="center">🧠 CORTEX × OpenClaw</h1>
 
-## What is CORTEX?
+<p align="center">
+  <strong>Give your AI agent a brain that remembers, learns, evolves, and knows how to think.</strong>
+  <br>
+  <em>Self-evolving cognitive memory for <a href="https://github.com/openclaw/openclaw">OpenClaw</a> agents.</em>
+</p>
 
-CORTEX is a 7-layer cognitive memory architecture inspired by human memory:
+<p align="center">
+  <a href="#-quick-start">Quick Start</a> •
+  <a href="#-how-it-works">How It Works</a> •
+  <a href="#-agent-tools">Agent Tools</a> •
+  <a href="#-migration">Migration</a> •
+  <a href="#-api-reference">API Reference</a> •
+  <a href="#-development">Development</a>
+</p>
 
-| Layer | Type | Purpose |
-|-------|------|---------|
-| 1 | **Working Memory** | Ring buffer for current session context |
-| 2 | **Episodic Memory** | Timestamped events and experiences |
-| 3 | **Semantic Memory** | Facts, knowledge, and concepts |
-| 4 | **Procedural Memory** | Skills, patterns, and how-to knowledge |
-| 5 | **Self-Improvement** | Error tracking and learning from mistakes |
-| 6 | **Self-Evolution** | Genetic algorithm optimizing retrieval strategies |
-| 7 | **Meta-Cognition** | Confidence scoring and knowledge gap detection |
+---
 
-Plus: Hippocampal hybrid search, memory consolidation (sleep/dream cycles), forgetting curves, gap filling, Obsidian vault sync, and automatic prompt assembly.
+## 🤔 The Problem
 
-## Architecture
+OpenClaw agents are smart — but they forget everything between sessions. Their memory is flat files (`MEMORY.md`, `memory/*.md`) that the agent reads in full or not at all. No search. No ranking. No learning. No evolution.
+
+**CORTEX changes that.**
+
+## ✨ What CORTEX Adds to Your Agent
+
+| Capability | Without CORTEX | With CORTEX |
+|:---|:---|:---|
+| **Memory** | Flat `.md` files, read in full | 4 specialized memory types, searchable |
+| **Retrieval** | Read entire file or nothing | Semantic search ranked by relevance × recency × importance |
+| **Cross-session** | Lossy summaries | Persistent memories with forgetting curve |
+| **Learning** | Agent manually writes notes | Auto-extracts facts, patterns, skills |
+| **Self-improvement** | None | Tracks errors, learns from corrections |
+| **Optimization** | Static | Genetic algorithm evolves retrieval strategies |
+| **Prompt engineering** | Same approach every time | Auto-selects CoT/ReAct/Few-Shot based on complexity |
+| **Knowledge gaps** | Unknown unknowns | Active gap detection with fill suggestions |
+
+## 🏗️ Architecture
 
 ```
-┌─────────────────────────────────────────────────┐
-│                  OpenClaw Agent                  │
-│                                                  │
-│  ┌──────────────────┐  ┌──────────────────────┐ │
-│  │  Context Engine   │  │    Agent Tools        │ │
-│  │  (auto-ingest,    │  │  cortex_remember      │ │
-│  │   assemble,       │  │  cortex_recall        │ │
-│  │   compact)        │  │  cortex_gaps          │ │
-│  └────────┬─────────┘  │  cortex_consolidate   │ │
-│           │             │  cortex_evolve        │ │
-│           │             │  cortex_stats         │ │
-│           │             └──────────┬───────────┘ │
-└───────────┼────────────────────────┼─────────────┘
-            │        HTTP/REST       │
-            └───────────┬────────────┘
-                        ▼
-         ┌──────────────────────────┐
-         │   CORTEX REST API        │
-         │   (FastAPI + MCP)        │
-         │   Port 8900              │
-         └──────────┬───────────────┘
-                    ▼
-         ┌──────────────────────────┐
-         │   CORTEX Engine          │
-         │   (Python)               │
-         │                          │
-         │  Working → Episodic →    │
-         │  Semantic / Procedural   │
-         │                          │
-         │  + Hippocampal Search    │
-         │  + Genetic Evolution     │
-         │  + Meta-Cognition        │
-         │  + Prompt Assembler      │
-         └──────────────────────────┘
+Your OpenClaw Agent
+├── 🔌 Context Engine (automatic, invisible)
+│   ├── INGEST   → Every message → Working + Episodic + Semantic memory
+│   ├── ASSEMBLE → Before LLM call → Retrieve relevant memories + select prompt technique
+│   ├── COMPACT  → Consolidation → Working → Episodic → Semantic/Procedural
+│   └── EVOLVE   → After turns → Genetic algorithm optimizes retrieval
+│
+├── 🛠️ Agent Tools (LLM can call explicitly)
+│   ├── cortex_remember    "Store this fact"
+│   ├── cortex_recall      "What do I know about X?"
+│   ├── cortex_gaps        "What am I missing?"
+│   ├── cortex_consolidate "Sleep cycle now"
+│   ├── cortex_evolve      "Optimize retrieval"
+│   └── cortex_stats       "Memory dashboard"
+│
+└── 📡 REST API + MCP (for external tools)
+    └── FastAPI on port 8900
 ```
 
-## Quick Start
+### The 9-Layer Memory Stack
+
+```
+┌─────────────────────────────────────────┐
+│  ⚡ Working Memory     — session buffer  │  ← Ring buffer, auto-managed
+├─────────────────────────────────────────┤
+│  📅 Episodic Memory    — events & dates  │  ← "User asked about X at 3pm"
+├─────────────────────────────────────────┤
+│  📚 Semantic Memory    — facts & knowledge│ ← "FastAPI uses Starlette"
+├─────────────────────────────────────────┤
+│  🔧 Procedural Memory  — skills & rules  │  ← "When debugging, check logs first"
+├─────────────────────────────────────────┤
+│  🔍 Hippocampal Index  — hybrid search   │  ← Vector + BM25 + Temporal + Graph
+├─────────────────────────────────────────┤
+│  😴 Consolidation      — sleep/dream     │  ← Ebbinghaus forgetting curve
+├─────────────────────────────────────────┤
+│  📈 Self-Improvement   — error learning  │  ← Tracks mistakes, extracts patterns
+├─────────────────────────────────────────┤
+│  🧬 Self-Evolution     — genetic algo    │  ← Evolves retrieval strategy weights
+├─────────────────────────────────────────┤
+│  🧭 Meta-Cognition     — gap detection   │  ← Knows what it doesn't know
+└─────────────────────────────────────────┘
+```
+
+---
+
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Docker & Docker Compose
-- Node.js 18+
-- CORTEX core: `git clone https://github.com/Anirach/cortex-memory.git` (sibling directory)
+- **Docker** & Docker Compose
+- **Node.js** 18+
+- **CORTEX core**: `git clone https://github.com/Anirach/cortex-memory.git`
 
-### One-Command Setup
+### Option A: One Command
 
 ```bash
 git clone https://github.com/Anirach/cortex-openclaw.git
 cd cortex-openclaw
-chmod +x setup.sh && ./setup.sh
+./setup.sh
 ```
 
-### Manual Setup
+### Option B: Step by Step
 
-**1. Start the CORTEX server:**
+**1. Start the CORTEX server**
 
 ```bash
-# Copy cortex-memory into build context (if not sibling)
-cp -r ../cortex-memory ./cortex-memory
-
-# Build and start
 docker compose up -d --build
 
-# Verify
+# Verify it's running
 curl http://localhost:8900/health
-# → {"status":"healthy","version":"0.4.0","uptime":1.23}
+# → {"status":"healthy","version":"0.4.0"}
 ```
 
-**2. Build the OpenClaw plugin:**
+**2. Build the OpenClaw plugin**
 
 ```bash
-cd plugin
-npm install
-npm run build
+cd plugin && npm install && npm run build
 ```
 
-**3. Configure OpenClaw:**
+**3. Tell OpenClaw to use CORTEX**
 
-Add to your `openclaw.json`:
+Add to `openclaw.json`:
 
-```json
+```jsonc
 {
   "plugins": {
     "slots": {
-      "contextEngine": "cortex"
+      "contextEngine": "cortex"    // ← This is the magic line
     },
     "entries": {
       "cortex-memory": {
@@ -122,304 +150,261 @@ Add to your `openclaw.json`:
 }
 ```
 
-## Migration — Importing Existing OpenClaw Memory
+**4. Restart OpenClaw** — CORTEX auto-migrates your existing memory files on first boot. Done! 🎉
 
-CORTEX can automatically import your existing OpenClaw workspace files on first boot. This is a one-time, idempotent operation.
+---
 
-### What Gets Imported
+## 🔄 How It Works
 
-| Source File | → CORTEX Type | Importance | Notes |
-|-------------|---------------|------------|-------|
-| `MEMORY.md` | Semantic | 0.8 (high) | Human-curated, most valuable |
-| `memory/*.md` | Episodic | 0.5 (medium) | Daily scratch notes |
-| `USER.md` | Semantic | 0.9 (high) | User profile facts |
-| `SOUL.md` | Procedural | 0.85 (high) | Behavioral rules & patterns |
-| Obsidian vault | Semantic | 0.6 (medium) | Knowledge notes |
-
-### Auto-Migration
-
-On first boot, the Context Engine checks migration status and auto-imports the workspace:
+### Every Message (Ingest)
 
 ```
-[CORTEX] Workspace auto-migrated: 47 entries imported
+User: "How do I deploy FastAPI to production?"
+                    ↓
+  ┌─ Working Memory ← raw message stored
+  ├─ Episodic Memory ← "User asked about FastAPI deployment at 4:30pm"
+  └─ Semantic Memory ← extracts: "User interested in FastAPI, production deployment"
 ```
 
-Set `OPENCLAW_WORKSPACE` environment variable to point to your workspace.
+### Before Each LLM Response (Assemble)
 
-### Manual Migration via CLI
+```
+  1. PromptAssembler analyzes: "This is a moderate complexity how-to question"
+  2. Selects techniques: RAG + Role(coder) + Chain-of-Thought
+  3. Hippocampal Search finds: 3 relevant memories about FastAPI, 2 about deployment
+  4. Builds enhanced system prompt with retrieved context
+  5. → LLM gets a much better prompt than it would have otherwise
+```
+
+### Periodically (Compact + Evolve)
+
+```
+  Sleep/Dream Cycle:
+  ├─ Working → Episodic (flush session buffer)
+  ├─ Episodic → Semantic (repeated facts get promoted)
+  ├─ Episodic → Procedural (detected patterns become skills)
+  ├─ Forgetting curve prunes low-value memories
+  └─ Genetic algorithm evolves retrieval weights
+```
+
+---
+
+## 🛠️ Agent Tools
+
+Your agent gets 7 new tools it can call during conversations:
+
+### `cortex_remember` — Store knowledge
+
+```
+"Remember that Anirach prefers Bangkok time and English responses"
+→ Stored as semantic memory, importance 0.8, tagged [user_preference]
+```
+
+### `cortex_recall` — Search memories
+
+```
+"What do I know about Python web frameworks?"
+→ Returns top 5 results ranked by relevance × recency × importance
+```
+
+### `cortex_gaps` — Find blind spots
+
+```
+"What knowledge am I missing?"
+→ Lists gaps with priority scores and fill suggestions
+```
+
+### `cortex_consolidate` — Trigger sleep cycle
+
+```
+→ Promotes, consolidates, and forgets memories
+→ Returns: "Consolidated 12, promoted 3 to semantic, forgot 5"
+```
+
+### `cortex_evolve` — Optimize retrieval
+
+```
+→ Runs one genetic algorithm generation
+→ Returns: "Gen 15, fitness 0.87, top strategy weights"
+```
+
+### `cortex_stats` — Memory dashboard
+
+```
+→ Working: 8 | Episodic: 234 | Semantic: 89 | Procedural: 12 | Total: 343
+```
+
+### `cortex_migrate` — Import workspace files
+
+```
+"Import my OpenClaw workspace into CORTEX"
+→ Reads MEMORY.md, daily files, USER.md, SOUL.md → CORTEX memory types
+```
+
+---
+
+## 📦 Migration
+
+### Existing OpenClaw User?
+
+CORTEX imports your files **automatically on first boot** — or you can do it manually:
 
 ```bash
-# Basic migration
-python -m server.migrate_cli /home/user/clawd
+# Preview what would be imported
+python -m server.migrate_cli /path/to/workspace --dry-run
 
-# Dry run (preview only)
-python -m server.migrate_cli /home/user/clawd --dry-run
+# Import everything
+python -m server.migrate_cli /path/to/workspace
+
+# Include your Obsidian vault
+python -m server.migrate_cli /path/to/workspace --obsidian /path/to/vault
 
 # Force re-import (after editing files)
-python -m server.migrate_cli /home/user/clawd --force
+python -m server.migrate_cli /path/to/workspace --force
 
-# Include Obsidian vault
-python -m server.migrate_cli /home/user/clawd --obsidian /home/user/obsidian-vault
-
-# Skip old daily files
-python -m server.migrate_cli /home/user/clawd --since 2026-03-01
-
-# JSON output (for scripting)
-python -m server.migrate_cli /home/user/clawd --json
+# Only import recent daily files
+python -m server.migrate_cli /path/to/workspace --since 2026-01-01
 ```
 
-### Migration via Agent Tool
-
-The agent has a `cortex_migrate` tool:
+### What Gets Imported Where
 
 ```
-Use cortex_migrate:
-- workspace_path: "/home/user/clawd"
-- force: false
-- dry_run: false
+MEMORY.md        →  📚 Semantic Memory   (importance: 0.8)  — curated facts
+memory/*.md      →  📅 Episodic Memory   (importance: 0.5)  — daily notes
+USER.md          →  📚 Semantic Memory   (importance: 0.9)  — user profile
+SOUL.md          →  🔧 Procedural Memory (importance: 0.85) — behavioral rules
+Obsidian vault   →  📚 Semantic Memory   (importance: 0.6)  — knowledge base
 ```
 
-### Migration REST API
+### Design Principles
 
-```bash
-# Full workspace migration
-curl -X POST http://localhost:8900/migrate/workspace \
-  -H "Content-Type: application/json" \
-  -d '{"workspace_path": "/app/workspace"}'
+- ✅ **Idempotent** — run twice, no duplicates
+- ✅ **Read-only** — your `.md` files are never modified
+- ✅ **Graceful** — missing files are silently skipped
+- ✅ **Coexistent** — CORTEX adds to files, doesn't replace them
 
-# Check migration status
-curl http://localhost:8900/migrate/status
+---
 
-# Migrate a single file
-curl -X POST http://localhost:8900/migrate/file \
-  -H "Content-Type: application/json" \
-  -d '{"filepath": "/app/workspace/MEMORY.md", "type": "memory_md"}'
-```
+## 📡 API Reference
 
-### Key Design Decisions
+All endpoints served on `http://localhost:8900`.
 
-- **Idempotent** — running twice doesn't duplicate memories (marker-based check)
-- **Read-only** — source files are never modified
-- **Graceful** — missing files are skipped without error
-- **Configurable** — importance weights, date filters, dry-run mode
+### Memory
 
-## Configuration
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `serverUrl` | string | `http://localhost:8900` | CORTEX REST API URL |
-| `autoConsolidate` | boolean | `true` | Auto-run consolidation every 20 turns |
-| `enablePromptAssembly` | boolean | `true` | Use PromptAssembler for context enhancement |
-
-### Environment Variables (Server)
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `CORTEX_DB_PATH` | `cortex.db` | SQLite database path |
-| `CORTEX_VAULT_PATH` | none | Obsidian vault path for sync |
-| `OBSIDIAN_VAULT` | `./vault` | Docker volume mount for Obsidian vault |
-| `OPENCLAW_WORKSPACE` | `/home/clawdbot/clawd` | OpenClaw workspace for migration (mounted read-only) |
-
-## Agent Tools
-
-### `cortex_remember`
-Store information in cognitive memory.
-
-```
-Use cortex_remember to store:
-- content: "FastAPI uses Starlette for the web parts and Pydantic for data validation"
-- type: "semantic"
-- importance: 0.8
-- tags: ["python", "web-frameworks"]
-```
-
-### `cortex_recall`
-Search memories by relevance, recency, and importance.
-
-```
-Use cortex_recall to search:
-- query: "Python web frameworks"
-- limit: 5
-- types: ["semantic", "procedural"]
-```
-
-### `cortex_gaps`
-Detect knowledge gaps and get suggestions for what to learn.
-
-```
-Use cortex_gaps
-→ Returns: gaps with descriptions, types, priorities, and fill suggestions
-```
-
-### `cortex_consolidate`
-Trigger the sleep/dream memory consolidation cycle.
-
-```
-Use cortex_consolidate
-→ Promotes working→episodic→semantic, applies forgetting curve
-→ Returns: consolidated, promoted, forgotten counts
-```
-
-### `cortex_evolve`
-Run one generation of genetic evolution to optimize retrieval.
-
-```
-Use cortex_evolve with feedback:
-- feedback: [{"query": "Python web", "result_id": "mem-001", "score": 0.9}]
-→ Returns: generation number, best fitness, current strategy weights
-```
-
-### `cortex_stats`
-Get memory system statistics.
-
-```
-Use cortex_stats
-→ Returns: counts per type, total, evolution generation
-```
-
-## REST API Reference
-
-All endpoints are served on port 8900.
-
-### Memory Operations
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/memory/store` | Store a memory |
-| POST | `/memory/recall` | Search memories |
-| POST | `/memory/consolidate` | Trigger consolidation |
-| POST | `/memory/evolve` | Run evolution generation |
-| GET | `/memory/stats` | Memory statistics |
-| GET | `/memory/gaps` | Knowledge gap detection |
+| Method | Endpoint | What it does |
+|:-------|:---------|:-------------|
+| `POST` | `/memory/store` | Store a memory (specify type, content, importance, tags) |
+| `POST` | `/memory/recall` | Search memories by query (returns ranked results) |
+| `POST` | `/memory/consolidate` | Trigger sleep/dream consolidation cycle |
+| `POST` | `/memory/evolve` | Run one genetic evolution generation |
+| `GET` | `/memory/stats` | Count memories per type |
+| `GET` | `/memory/gaps` | Detect knowledge gaps |
 
 ### Prompt Assembly
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/prompt/assemble` | Auto-select prompt engineering techniques |
+| Method | Endpoint | What it does |
+|:-------|:---------|:-------------|
+| `POST` | `/prompt/assemble` | Analyze complexity → select techniques → build prompt |
 
 ### Migration
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/migrate/workspace` | Full workspace migration |
-| GET | `/migrate/status` | Check migration status |
-| POST | `/migrate/file` | Migrate a single file |
+| Method | Endpoint | What it does |
+|:-------|:---------|:-------------|
+| `POST` | `/migrate/workspace` | Import an OpenClaw workspace |
+| `GET` | `/migrate/status` | Check if workspace was already migrated |
+| `POST` | `/migrate/file` | Import a single file |
 
-### Obsidian Integration
+### Other
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/obsidian/sync` | Sync with Obsidian vault |
+| Method | Endpoint | What it does |
+|:-------|:---------|:-------------|
+| `POST` | `/obsidian/sync` | Sync with Obsidian vault |
+| `POST` | `/mcp` | MCP JSON-RPC (tools/list, tools/call, resources/list, resources/read) |
+| `GET` | `/health` | Health check |
 
-### MCP Protocol
+---
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/mcp` | MCP JSON-RPC handler |
+## ⚙️ Configuration
 
-**Supported MCP methods:**
-- `tools/list` — List all CORTEX tools
-- `tools/call` — Call a CORTEX tool
-- `resources/list` — List memory type resources
-- `resources/read` — Read memories by type
+### OpenClaw Plugin Config
 
-### Health
+| Option | Default | Description |
+|:-------|:--------|:------------|
+| `serverUrl` | `http://localhost:8900` | CORTEX API server URL |
+| `autoConsolidate` | `true` | Run consolidation every 20 turns |
+| `enablePromptAssembly` | `true` | Auto-select prompt techniques |
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/health` | Health check |
+### Server Environment Variables
 
-## How the Context Engine Works
+| Variable | Default | Description |
+|:---------|:--------|:------------|
+| `CORTEX_DB_PATH` | `cortex.db` | SQLite database location |
+| `CORTEX_VAULT_PATH` | — | Obsidian vault path |
+| `OPENCLAW_WORKSPACE` | — | Workspace path for auto-migration |
 
-The CORTEX Context Engine integrates seamlessly with OpenClaw's conversation loop:
+---
 
-1. **Ingest** — Every message is stored in working memory. Substantive user messages become episodic memories. Facts become semantic memories.
+## 🧑‍💻 Development
 
-2. **Assemble** — Before each LLM call, the Context Engine uses PromptAssembler to:
-   - Analyze query complexity (simple/moderate/complex/gap/skill)
-   - Select optimal prompt engineering techniques (CoT, RAG, ReAct, etc.)
-   - Retrieve relevant memories via hippocampal hybrid search
-   - Build an enhanced system prompt with retrieved context
-
-3. **Compact** — On demand (or auto every 20 turns), triggers consolidation:
-   - Working → Episodic (session memories)
-   - Episodic → Semantic (repeated facts)
-   - Episodic → Procedural (detected patterns)
-   - Applies forgetting curve to prune low-value memories
-
-4. **AfterTurn** — Every 10 turns, runs a genetic evolution step to optimize retrieval strategy weights.
-
-## Development
-
-### Run Python Tests
-
-```bash
-cd server
-pip install -e ../cortex-memory  # install CORTEX
-pip install fastapi uvicorn httpx pytest
-python -m pytest tests/ -v
-```
-
-### Run TypeScript Tests
-
-```bash
-cd plugin
-npm install
-npm run build
-node --test tests/cortex-client.test.ts
-```
-
-### Local Development (without Docker)
-
-```bash
-# Terminal 1: Start CORTEX server
-cd server
-CORTEX_DB_PATH=dev.db uvicorn cortex_server:app --reload --port 8900
-
-# Terminal 2: Watch plugin build
-cd plugin
-npm run dev
-```
-
-## Project Structure
+### Project Structure
 
 ```
 cortex-openclaw/
-├── server/                     # Python REST API (Layer 1)
-│   ├── cortex_server.py        # FastAPI app with all endpoints
-│   ├── mcp_handler.py          # MCP JSON-RPC protocol handler
-│   ├── openclaw_migrator.py    # OpenClaw workspace migration
-│   ├── migrate_cli.py          # CLI for manual migration
-│   ├── requirements.txt        # Python dependencies
-│   ├── Dockerfile              # Container build
-│   └── tests/
-│       ├── test_api.py          # API endpoint tests
-│       └── test_migrator.py    # Migration tests
-├── plugin/                     # TypeScript OpenClaw plugin (Layer 2)
-│   ├── package.json            # npm package config
-│   ├── openclaw.plugin.json    # OpenClaw plugin manifest
-│   ├── tsconfig.json           # TypeScript config
-│   ├── src/
-│   │   ├── index.ts            # Plugin entry (Context Engine + Tools)
-│   │   └── cortex-client.ts    # HTTP client for CORTEX API
-│   └── tests/
-│       └── cortex-client.test.ts  # Client tests with mock server
-├── docker-compose.yml          # Docker Compose (Layer 3)
-├── setup.sh                    # One-command setup script
-├── README.md                   # This file
-└── .gitignore
+│
+├── server/                        # 🐍 Python REST API
+│   ├── cortex_server.py           #    FastAPI app (all endpoints)
+│   ├── mcp_handler.py             #    MCP protocol handler
+│   ├── openclaw_migrator.py       #    Workspace migration engine
+│   ├── migrate_cli.py             #    CLI migration tool
+│   ├── Dockerfile                 #    Production container
+│   └── tests/                     #    Python tests
+│
+├── plugin/                        # 📦 TypeScript OpenClaw Plugin
+│   ├── src/index.ts               #    Context Engine + 7 tools
+│   ├── src/cortex-client.ts       #    HTTP client
+│   ├── openclaw.plugin.json       #    Plugin manifest
+│   └── tests/                     #    TypeScript tests
+│
+├── docker-compose.yml             # 🐳 One-command deployment
+├── setup.sh                       # 🚀 Setup script
+└── README.md                      # 📖 You are here
 ```
 
-## Related Projects
+### Running Tests
 
-- **[cortex-memory](https://github.com/Anirach/cortex-memory)** — The core CORTEX cognitive memory engine (Python)
-- **[OpenClaw](https://github.com/nicobailey/openclaw)** — AI agent platform (TypeScript)
+```bash
+# Python (API + migration)
+cd server && python -m pytest tests/ -v
 
-## License
+# TypeScript (client)
+cd plugin && npm test
+```
+
+### Local Dev (no Docker)
+
+```bash
+# Terminal 1: CORTEX server
+cd server && uvicorn cortex_server:app --reload --port 8900
+
+# Terminal 2: Plugin watch
+cd plugin && npm run dev
+```
+
+---
+
+## 🔗 Related
+
+| Project | Description |
+|:--------|:------------|
+| [cortex-memory](https://github.com/Anirach/cortex-memory) | 🧠 Core CORTEX engine (Python) — 179 tests, 9 layers |
+| [OpenClaw](https://github.com/openclaw/openclaw) | 🐾 AI agent platform (TypeScript) |
+
+---
+
+## 📄 License
 
 MIT
 
-## Author
+## 👨‍🏫 Author
 
-[Anirach](https://github.com/Anirach) — University lecturer & AI engineer
+**[Anirach Mingkhwan](https://github.com/Anirach)** — University lecturer & AI engineer, KMUTNB
